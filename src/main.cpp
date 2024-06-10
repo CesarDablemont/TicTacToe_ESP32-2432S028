@@ -14,6 +14,7 @@
 
 // Touchscreen coordinates: (x, y) and pressure (z)
 int x, y, z;
+bool backMenu;
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -52,7 +53,7 @@ void setup() {
   // Initialiser Display avec un pointeur vers tft
   display = new Display(&tft);
   // Initialiser Input avec un pointeur vers touchscreen
-  input = new Input(&touchscreen);
+  input = new Input(touchscreen);
 
   settings.startPlayer = p1;
   display->GameMenu();
@@ -104,54 +105,30 @@ void loop() {
       break;
 
     case 1:
+      backMenu = false;
       display->SettingsMenu();
-      switch (input->Menu(buttonMenuSettings, 5)) {
-        case 0:
-          // settings.MenuOpponent(input, display, p2, touchscreen);
-          display->MenuOpponent();
-          switch (input->Menu(buttonMenuOpponent, 6)) {
-            case 0:
-              delete p2;
-              p2 = new PlayerHuman(Cell::O, touchscreen);
-              break;
+      while (!backMenu) {
+        switch (input->Menu(buttonMenuSettings, 5)) {
+          case 0:
+            // settings.MenuOpponent(input, display, p2, touchscreen);
+            display->MenuOpponent();
+            input->MenuOpponent(p2);
+            break;
 
-            case 1:
-              delete p2;
-              p2 = new PlayerAI(Cell::O);
-              settings.aiDifficultyMode = AIDifficultyMode::Impossible;
-              break;
+          case 1:
+            /* code start mode */
+            break;
 
-            case 2:
-              delete p2;
-              p2 = new PlayerAI(Cell::O);
-              settings.aiDifficultyMode = AIDifficultyMode::Hard;
-              break;
+          case 4:
+            backMenu = true;
+            break;
 
-            case 3:
-              delete p2;
-              p2 = new PlayerAI(Cell::O);
-              settings.aiDifficultyMode = AIDifficultyMode::Intermediate;
-              break;
+          default:
+            break;
+        }
 
-            case 4:
-              delete p2;
-              p2 = new PlayerAI(Cell::O);
-              settings.aiDifficultyMode = AIDifficultyMode::Easy;
-              break;
-
-            default:
-              break;
-          }
-
-          display->SettingsMenu();
-          break;
-
-        case 1:
-          /* code start mode */
-          break;
-
-        default:
-          break;
+        // eviter un clignotement
+        if(!backMenu) display->SettingsMenu();
       }
       input->WaitForRelease();
       display->GameMenu();
