@@ -14,6 +14,8 @@ class Display {
   Display(TFT_eSPI* tft);
   void GameMenu();
   void drawButton(const Button& b);
+  
+  void ClearScreen();
   void Grid();
   void Turn(APlayer* player);
   void OneCell(Cell cell, int x, int y);

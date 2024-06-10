@@ -20,10 +20,9 @@ void Display::drawButton(const Button& b) {
 ---------------------------  JEU ----------------------
 =========================================================================*/
 #pragma region
-void Display::Grid() {
-  tft->fillScreen(TFT_BLACK);
-  tft->setTextColor(TFT_WHITE);
+void Display::ClearScreen() { tft->fillScreen(TFT_BLACK); }
 
+void Display::Grid() {
   int cellSize = SCREEN_WIDTH / 3;
   int deltaY = SCREEN_HEIGHT - SCREEN_WIDTH;
   tft->drawRect(0, deltaY, SCREEN_WIDTH, SCREEN_WIDTH, TFT_WHITE);
@@ -41,9 +40,6 @@ void Display::Turn(APlayer* player) {
     tft->setTextColor(Settings::PlayerColors[1]);
     tft->drawCentreString("Tour joueur 2", SCREEN_WIDTH / 2, 40, FONT_SIZE_GRAND);
   }
-  //   WriteInColor(Board.PlayerColors[0], "Player 1 turn");
-  // else
-  //   WriteInColor(Board.PlayerColors[1], "Player 2 turn");
 }
 
 void Display::OneCell(Cell cell, int x, int y) {
@@ -80,6 +76,7 @@ void Display::Cells(Board board) {
 }
 
 void Display::BoardShow(Board board, APlayer* player) {
+  ClearScreen();
   Grid();
   Turn(player);
   Cells(board);
@@ -97,16 +94,18 @@ void Display::Win(Board board) {
   String winnerStr = (winner == Cell::X) ? "X" : "O";
   String message = "Les " + winnerStr + " gagnent!";
 
+  ClearScreen();
+  Grid();
+  Cells(board);
+  tft->setTextColor(TFT_WHITE);
+  tft->drawCentreString(message, SCREEN_WIDTH / 2, 40, FONT_SIZE_GRAND);
+
   int numberOfExecutions = 10;
   for (int i = 0; i < numberOfExecutions; i++) {
     if (i % 2 != 0) {
-      Grid();
       Cells(board);
-      tft->setTextColor(TFT_WHITE);
-      tft->drawCentreString(message, SCREEN_WIDTH / 2, 40, FONT_SIZE_GRAND);
     } else
       ErasedCell(board);
-
     delay(250);
   }
 }
@@ -115,6 +114,7 @@ void Display::EndGame(GameState gameState, Board board) {
   if (gameState == GameState::Victory)
     Win(board);
   else {
+    ClearScreen();
     Grid();
     Cells(board);
     tft->setTextColor(TFT_WHITE);
@@ -137,7 +137,6 @@ void Display::SettingsMenu() {
     drawButton(buttonMenuSettings[i]);
   }
 }
-
 
 void Display::MenuOpponent() {
   tft->fillScreen(TFT_BLACK);
